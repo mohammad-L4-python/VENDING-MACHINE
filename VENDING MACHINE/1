@@ -1,0 +1,68 @@
+class VendingMachine:
+    def __init__(self):
+        self.products = {
+            '1': {'name': 'mountain dew ', 'price': 1.50, 'category': 'Beverage'},
+            '2': {'name': 'protein bar', 'price': 1.00, 'category': 'Snack'},
+            '3': {'name': 'Alain Water', 'price': 1.00, 'category': 'Beverage'},
+            '4': {'name': 'apple Juice', 'price': 2.00, 'category': 'Beverage'},
+            '5': {'name': 'lays Chips', 'price': 1.25, 'category': 'Snack'},
+            '6': {'name': 'galaxy choco bar', 'price': 1.75, 'category': 'Snack'}
+        }
+        self.balance = 0.0
+        self.stock = {code: 10 for code in self.products}
+
+    def display_menu(self):
+        print("Welcome to the Vending Machine!")
+        print("Categories:")
+        categories = set(product['category'] for product in self.products.values())
+        for category in categories:
+            print(f"{category}:")
+            for code, product_info in self.products.items():
+                if product_info['category'] == category and self.stock[code] > 0:
+                    print(f"{code}. {product_info['name']} - ${product_info['price']:.2f}")
+            print()
+
+    def insert_money(self, amount):
+        self.balance += amount
+        print(f"Balance: ${self.balance:.2f}")
+
+    def select_product(self, product_code):
+        if product_code in self.products:
+            product_info = self.products[product_code]
+            if self.stock[product_code] > 0:
+                if self.balance >= product_info['price']:
+                    self.balance -= product_info['price']
+                    self.stock[product_code] -= 1
+                    print(f"Dispensing {product_info['name']}! Remaining coins: ${self.balance:.2f}")
+                    print(f"Thank you for your purchase!. Come again")
+                else:
+                    print("Not enough coins. Please insert more.")
+            else:
+                print("Sorry, this product is currently out of stock.")
+        else:
+            print("Invalid product.")
+
+    def return_change(self):
+        change = self.balance
+        self.balance = 0.0
+        print(f"Returning change: ${change:.2f}")
+
+    def suggest_purchase(self, category):
+        suggestions = [product_info['name'] for code, product_info in self.products.items()
+                       if product_info['category'] == category and self.stock[code] > 0]
+        if suggestions:
+            print(f" try {' or '.join(suggestions)} with your purchase!")
+
+if __name__ == "__main__":
+    vending_machine = VendingMachine()
+    vending_machine.display_menu()
+    money_inserted = float(input("Insert coins: $"))
+    vending_machine.insert_money(money_inserted)
+    product_code = input("Enter the number of the product you want to buy: ")
+    vending_machine.select_product(product_code)
+
+    if product_code in vending_machine.products:
+        selected_category = vending_machine.products[product_code]['category']
+        vending_machine.suggest_purchase(selected_category)
+
+    vending_machine.return_change()
